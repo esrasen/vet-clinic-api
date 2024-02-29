@@ -6,19 +6,17 @@ import com.esrasen.vetclinicapi.core.exception.NotFoundException;
 import com.esrasen.vetclinicapi.core.utilies.Msg;
 import com.esrasen.vetclinicapi.dao.IDoctorRepo;
 import com.esrasen.vetclinicapi.entities.Doctor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DoctorManager implements IDoctorService {
 
     private final IDoctorRepo doctorRepo;
-
-    public DoctorManager(IDoctorRepo doctorRepo) {
-        this.doctorRepo = doctorRepo;
-    }
 
     @Override
     public Doctor save(Doctor doctor) {

@@ -1,10 +1,15 @@
 package com.esrasen.vetclinicapi.business.concretes;
 
 import com.esrasen.vetclinicapi.business.abstracts.IVaccineService;
+import com.esrasen.vetclinicapi.core.config.modelMapper.IModelMapperService;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
+import com.esrasen.vetclinicapi.core.result.ResultData;
 import com.esrasen.vetclinicapi.core.utilies.Msg;
+import com.esrasen.vetclinicapi.core.utilies.ResultHelper;
 import com.esrasen.vetclinicapi.dao.IVaccineRepo;
+import com.esrasen.vetclinicapi.dto.response.vaccine.VaccineResponse;
 import com.esrasen.vetclinicapi.entities.Vaccine;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,14 +17,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class VaccineManager implements IVaccineService {
     private final IVaccineRepo vaccineRepo;
+    private final IModelMapperService modelMapperService;
 
-    public VaccineManager(IVaccineRepo vaccineRepo) {
-        this.vaccineRepo = vaccineRepo;
-    }
 
     @Override
     public Vaccine save(Vaccine vaccine) {
@@ -64,6 +69,17 @@ public class VaccineManager implements IVaccineService {
         Vaccine vaccine = this.get(id);
         this.vaccineRepo.delete(vaccine);
         return true;
+    }
+
+    @Override
+    public ResultData<List<VaccineResponse>> findByProtectionFinishDateBetween(LocalDate startDate, LocalDate finishDate) {
+        List<Vaccine> vaccineList = this.vaccineRepo.findByProtectionFinishDateBetween(startDate, finishDate);
+
+        List<VaccineResponse> vaccineResponseList = vaccineList.stream()
+                .map(entity -> modelMapperService.forResponse().map(entity, VaccineResponse.class))
+                .collect(Collectors.toList());
+
+        return ResultHelper.success(vaccineResponseList);
     }
 
     @Override

@@ -9,28 +9,27 @@ import com.esrasen.vetclinicapi.core.utilies.ResultHelper;
 import com.esrasen.vetclinicapi.dto.request.vaccine.VaccineSaveRequest;
 import com.esrasen.vetclinicapi.dto.request.vaccine.VaccineUpdateRequest;
 import com.esrasen.vetclinicapi.dto.response.CursorResponse;
+import com.esrasen.vetclinicapi.dto.response.animal.AnimalVaccineResponse;
 import com.esrasen.vetclinicapi.dto.response.vaccine.VaccineResponse;
+import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Vaccine;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/vaccines")
+@RequiredArgsConstructor
 public class VaccineController {
     private final IVaccineService vaccineService;
     private final IModelMapperService modelMapper;
-
     private final IAnimalService animalService;
 
-    public VaccineController(IVaccineService vaccineService, IModelMapperService modelMapper, IAnimalService animalService) {
-        this.vaccineService = vaccineService;
-        this.modelMapper = modelMapper;
-        this.animalService = animalService;
-    }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
@@ -69,6 +68,13 @@ public class VaccineController {
                 .map(vaccine -> this.modelMapper.forResponse().map(vaccine, VaccineResponse.class));
 
         return ResultHelper.cursor(vaccineResponsePage);
+    }
+
+    @GetMapping("/expiring")
+    @ResponseStatus(HttpStatus.OK)
+    public ResultData<List<VaccineResponse>> getVaccines (@RequestParam(name = "startDate") LocalDate startDate,
+                                                          @RequestParam(name = "finishDate") LocalDate finishDate) {
+        return this.vaccineService.findByProtectionFinishDateBetween(startDate, finishDate);
     }
 
 

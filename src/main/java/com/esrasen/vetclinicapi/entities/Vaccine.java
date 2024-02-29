@@ -1,5 +1,6 @@
 package com.esrasen.vetclinicapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,12 +22,10 @@ public class Vaccine {
     @Column(name = "vaccine_id", columnDefinition = "serial")
     private Long id;
 
-    @NotNull
-    @Column(name = "vaccine_name", length = 150)
+    @Column(name = "vaccine_name", length = 150, nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "vaccine_code")
+    @Column(name = "vaccine_code", nullable = false)
     private String code;
 
     @Column(name = "protection_start_date")
@@ -37,6 +36,7 @@ public class Vaccine {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "animal_id")
+    @JsonIgnore
     private Animal animal;
 
 }

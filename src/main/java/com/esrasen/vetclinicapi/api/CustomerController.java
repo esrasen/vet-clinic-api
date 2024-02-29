@@ -13,6 +13,7 @@ import com.esrasen.vetclinicapi.dto.response.customer.CustomerResponse;
 import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Customer;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +22,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
+@RequiredArgsConstructor
 public class CustomerController {
     private final ICustomerService customerService;
     private final IModelMapperService modelMapper;
 
-    public CustomerController(ICustomerService customerService, IModelMapperService modelMapper) {
-        this.customerService = customerService;
-        this.modelMapper = modelMapper;
-    }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)

@@ -23,8 +23,7 @@ public class Animal {
     @Column(name = "animal_id", columnDefinition = "serial")
     private Long id;
 
-    @NotNull
-    @Column(name = "animal_name", length = 150)
+    @Column(name = "animal_name", length = 150, nullable = false)
     private String name;
 
     @Column(name = "animal_species")

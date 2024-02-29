@@ -30,7 +30,13 @@ public class ResultHelper {
         return new Result(false, msg, "404");
     }
     public static Result alreadyExist(String msg) {
+        return new Result(false, msg, "404");
+    }
+    public static Result badRequest(String msg) {
         return new Result(false, msg, "400");
+    }
+    public static Result conflict(String msg) {
+        return new Result(false, msg, "409");
     }
 
 

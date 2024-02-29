@@ -12,24 +12,20 @@ import com.esrasen.vetclinicapi.dto.response.availableDate.AvailableDateResponse
 import com.esrasen.vetclinicapi.entities.AvailableDate;
 import com.esrasen.vetclinicapi.entities.Doctor;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/available-dates")
+@RequiredArgsConstructor
 public class AvailableDateController {
 
     private final IAvailableDateService availableDateService;
     private final IModelMapperService modelMapper;
-
     private final IDoctorService doctorService;
 
-    public AvailableDateController(IAvailableDateService availableDateService, IModelMapperService modelMapper, IDoctorService doctorService) {
-        this.availableDateService = availableDateService;
-        this.modelMapper = modelMapper;
-        this.doctorService = doctorService;
-    }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)

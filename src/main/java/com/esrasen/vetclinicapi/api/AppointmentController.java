@@ -15,6 +15,7 @@ import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Appointment;
 import com.esrasen.vetclinicapi.entities.Doctor;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
+@RequiredArgsConstructor
 public class AppointmentController {
 
     private final IAppointmentService appointmentService;
@@ -32,12 +34,7 @@ public class AppointmentController {
     private final IDoctorService doctorService;
     private final IAnimalService animalService;
 
-    public AppointmentController(IAppointmentService appointmentService, IModelMapperService modelMapper, IDoctorService doctorService, IAnimalService animalService) {
-        this.appointmentService = appointmentService;
-        this.modelMapper = modelMapper;
-        this.doctorService = doctorService;
-        this.animalService = animalService;
-    }
+
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
@@ -47,8 +44,8 @@ public class AppointmentController {
         Doctor doctor = this.doctorService.get(appointmentSaveRequest.getDoctorId());
         saveAppointment.setDoctor(doctor);
 
-        Animal animal = this.animalService.get(appointmentSaveRequest.getAnimalId());
-        saveAppointment.setAnimal(animal);
+      //  Animal animal = this.animalService.get(appointmentSaveRequest.getAnimalId());
+      //  saveAppointment.setAnimal(animal);
 
         this.appointmentService.save(saveAppointment);
         return ResultHelper.created(this.modelMapper.forResponse().map(saveAppointment, AppointmentResponse.class));

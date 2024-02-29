@@ -1,5 +1,7 @@
 package com.esrasen.vetclinicapi.business.abstracts;
 
+import com.esrasen.vetclinicapi.core.result.ResultData;
+import com.esrasen.vetclinicapi.dto.response.vaccine.VaccineResponse;
 import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Doctor;
 import com.esrasen.vetclinicapi.entities.Vaccine;
@@ -15,6 +17,7 @@ public interface IVaccineService {
     Page<Vaccine> cursor(int page, int pageSize);
     Vaccine update(Vaccine vaccine);
     boolean delete(Long id);
+    ResultData<List<VaccineResponse>> findByProtectionFinishDateBetween(LocalDate startDate, LocalDate finishDate);
     boolean existsByAnimalIdAndNameAndCodeAndProtectionFinishDateAfter(Long animalId,String vaccineName, String vaccineCode, LocalDate protectionFinishDate);
 
 }

@@ -1,69 +1,99 @@
 package com.esrasen.vetclinicapi.business.concretes;
 
 import com.esrasen.vetclinicapi.business.abstracts.IAnimalService;
+import com.esrasen.vetclinicapi.business.abstracts.ICustomerService;
+import com.esrasen.vetclinicapi.core.config.modelMapper.IModelMapperService;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
 import com.esrasen.vetclinicapi.core.utilies.Msg;
 import com.esrasen.vetclinicapi.dao.IAnimalRepo;
+import com.esrasen.vetclinicapi.dao.ICustomerRepo;
 import com.esrasen.vetclinicapi.dao.IVaccineRepo;
+import com.esrasen.vetclinicapi.dto.request.animal.AnimalSaveRequest;
+import com.esrasen.vetclinicapi.dto.request.animal.AnimalUpdateRequest;
+import com.esrasen.vetclinicapi.dto.response.CursorResponse;
+import com.esrasen.vetclinicapi.dto.response.animal.AnimalResponse;
 import com.esrasen.vetclinicapi.entities.Animal;
+import com.esrasen.vetclinicapi.entities.Customer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AnimalManager implements IAnimalService {
     private final IAnimalRepo animalRepo;
-    private final IVaccineRepo vaccineRepo;
+    private final ICustomerRepo customerRepo;
+    private final IModelMapperService modelMapper;
 
-    public AnimalManager(IAnimalRepo animalRepo, IVaccineRepo vaccineRepo) {
-        this.animalRepo = animalRepo;
-        this.vaccineRepo = vaccineRepo;
+    @Override
+    public AnimalResponse getAnimalById(Long id) {
+        Animal animal = animalRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        return modelMapper.forResponse().map(animal, AnimalResponse.class);
     }
 
     @Override
-    public Animal save(Animal animal) {
-        return this.animalRepo.save(animal);
-    }
-
-    @Override
-    public Animal get(Long id) {
-        return this.animalRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
-    }
-
-    @Override
-    public List<Animal> findAllByName(String name) {
-
-        if (animalRepo.findAllByName(name).isEmpty())
-            throw new NotFoundException(Msg.NOT_FOUND);
-        return this.animalRepo.findAllByName(name);
-    }
-
-    @Override
-    public List<Animal> findAnimalsWithVaccinesExpiringBetween(LocalDate startDate, LocalDate finishDate) {
-        return this.vaccineRepo.findAnimalsWithVaccinesExpiringBetween(startDate, finishDate);
-    }
-
-
-    @Override
-    public Page<Animal> cursor(int page, int pageSize) {
+    public CursorResponse<AnimalResponse> cursor(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        return this.animalRepo.findAll(pageable);
+        Page<Animal> animals = animalRepo.findAll(pageable);
+        Page<AnimalResponse> animalResponsePage = animals
+                .map(animal -> this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+
+        return new CursorResponse<>(animals.getNumber(), animals.getSize(), animals.getTotalElements(), animalResponsePage.getContent());
+
     }
 
     @Override
-    public Animal update(Animal animal) {
-        this.get(animal.getId());
-        return this.animalRepo.save(animal);
+    public List<AnimalResponse> findAllByName(String name) {
+
+        List<Animal> animals = animalRepo.findAllByName(name);
+
+        if (animals.isEmpty())
+            throw new NotFoundException(Msg.NOT_FOUND);
+
+        return modelMapper.mapList(animals, AnimalResponse.class);
     }
 
     @Override
-    public boolean delete(Long id) {
-        Animal animal = this.get(id);
-        this.animalRepo.delete(animal);
-        return true;
+    public AnimalResponse save(AnimalSaveRequest animalSaveRequest) {
+        Animal animal = modelMapper.forRequest().map(animalSaveRequest, Animal.class);
+
+        Customer customer = customerRepo.findById(animalSaveRequest.getCustomerId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        animal.setCustomer(customer);
+
+        Animal saveAnimal = animalRepo.save(animal);
+        return modelMapper.forResponse().map(saveAnimal, AnimalResponse.class);
+    }
+
+
+    @Override
+    public AnimalResponse update(AnimalUpdateRequest animalUpdateRequest) {
+
+        Animal existingAnimal = animalRepo.findById(animalUpdateRequest.getId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+
+        Customer customer = customerRepo.findById(animalUpdateRequest.getCustomerId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+
+        existingAnimal.setCustomer(customer);
+
+        modelMapper.forRequest().map(animalUpdateRequest, existingAnimal);
+
+        /*if (!Objects.equals(animalUpdateRequest.getCustomerId(), existingAnimal.getCustomer().getId())
+        && (!Objects.equals(animalUpdateRequest.getName(), existingAnimal.getName()))){
+
+        }*/
+        Animal updateAnimal = animalRepo.save(existingAnimal);
+
+        return modelMapper.forResponse().map(updateAnimal, AnimalResponse.class);
+    }
+
+    @Override
+    public AnimalResponse delete(Long id) {
+        Animal existingAnimal = animalRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        animalRepo.delete(existingAnimal);
+
+        return modelMapper.forResponse().map(existingAnimal, AnimalResponse.class);
     }
 }

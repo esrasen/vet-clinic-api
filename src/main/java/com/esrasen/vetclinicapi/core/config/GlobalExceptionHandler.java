@@ -1,7 +1,9 @@
 package com.esrasen.vetclinicapi.core.config;
 
-import com.esrasen.vetclinicapi.core.exception.AppointmentException;
+import com.esrasen.vetclinicapi.core.exception.appointment.DoctorNotAvailableException;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
+import com.esrasen.vetclinicapi.core.exception.appointment.AppointmentSlotNotAvailableException;
+import com.esrasen.vetclinicapi.core.exception.appointment.InvalidAppointmentTimeException;
 import com.esrasen.vetclinicapi.core.result.Result;
 import com.esrasen.vetclinicapi.core.result.ResultData;
 import com.esrasen.vetclinicapi.core.utilies.ResultHelper;
@@ -32,8 +34,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ResultHelper.validateError(validationErrorList), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AppointmentException.class)
-    public ResponseEntity<Result> handleAppointmentException(AppointmentException e) {
-        return new ResponseEntity<>(ResultHelper.alreadyExist(e.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(DoctorNotAvailableException.class)
+    public ResponseEntity<Result> handleAppointmentException(DoctorNotAvailableException e) {
+        return new ResponseEntity<>(ResultHelper.alreadyExist(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidAppointmentTimeException.class)
+    public ResponseEntity<Result> handleInvalidAppointmentTimeException(InvalidAppointmentTimeException e) {
+        return new ResponseEntity<>(ResultHelper.badRequest(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AppointmentSlotNotAvailableException.class)
+    public ResponseEntity<Result> handleAppointmentSlotNotAvailableException(AppointmentSlotNotAvailableException e) {
+        return new ResponseEntity<>(ResultHelper.conflict(e.getMessage()), HttpStatus.CONFLICT);
     }
 }

@@ -19,8 +19,7 @@ public class Appointment {
     @Column(name = "appointment_id", columnDefinition = "serial")
     private Long id;
 
-    @NotNull
-    @Column
+    @Column(nullable = false)
     private LocalDateTime appointmentDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

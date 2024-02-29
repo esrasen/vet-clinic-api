@@ -11,21 +11,19 @@ import com.esrasen.vetclinicapi.dto.response.CursorResponse;
 import com.esrasen.vetclinicapi.dto.response.doctor.DoctorResponse;
 import com.esrasen.vetclinicapi.entities.Doctor;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/doctors")
+@RequiredArgsConstructor
 public class DoctorController {
 
     private final IDoctorService doctorService;
     private final IModelMapperService modelMapper;
 
-    public DoctorController(IDoctorService doctorService, IModelMapperService modelMapper) {
-        this.doctorService = doctorService;
-        this.modelMapper = modelMapper;
-    }
 
 
     @PostMapping()

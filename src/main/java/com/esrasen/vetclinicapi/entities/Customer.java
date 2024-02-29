@@ -22,8 +22,7 @@ public class Customer {
     @Column(name = "customer_id", columnDefinition = "serial")
     private Long id;
 
-    @NotNull
-    @Column(name = "customer_name", length = 150)
+    @Column(name = "customer_name", length = 150,nullable = false)
     private String name;
 
     @Column(name = "customer_phone", length = 20)

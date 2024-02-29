@@ -21,8 +21,7 @@ public class Doctor {
     @Column(name = "doctor_id", columnDefinition = "serial")
     private Long id;
 
-    @NotNull
-    @Column(name = "doctor_name", length = 150)
+    @Column(name = "doctor_name", length = 150,nullable = false)
     private String name;
 
     @Column(name = "doctor_phone", length = 20)

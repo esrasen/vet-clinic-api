@@ -6,19 +6,18 @@ import com.esrasen.vetclinicapi.core.utilies.Msg;
 import com.esrasen.vetclinicapi.dao.IAvailableDateRepo;
 import com.esrasen.vetclinicapi.entities.AvailableDate;
 import com.esrasen.vetclinicapi.entities.Doctor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AvailableDateManager implements IAvailableDateService {
 
     private final IAvailableDateRepo availableDateRepo;
 
-    public AvailableDateManager(IAvailableDateRepo availableDateRepo) {
-        this.availableDateRepo = availableDateRepo;
-    }
 
     @Override
     public AvailableDate save(AvailableDate availableDate) {

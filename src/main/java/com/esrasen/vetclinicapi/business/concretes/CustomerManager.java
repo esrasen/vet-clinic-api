@@ -7,6 +7,7 @@ import com.esrasen.vetclinicapi.dao.IAnimalRepo;
 import com.esrasen.vetclinicapi.dao.ICustomerRepo;
 import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Customer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,15 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerManager implements ICustomerService {
 
     private final ICustomerRepo customerRepo;
     private final IAnimalRepo animalRepo;
-
-    public CustomerManager(ICustomerRepo customerRepo, IAnimalRepo animalRepo) {
-        this.customerRepo = customerRepo;
-        this.animalRepo = animalRepo;
-    }
 
 
     @Override
