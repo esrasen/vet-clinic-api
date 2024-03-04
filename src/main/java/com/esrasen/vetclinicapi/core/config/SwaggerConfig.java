@@ -20,7 +20,8 @@ public class SwaggerConfig {
     @Profile("prod")
     @Bean
     public OpenAPI prodOpenAPI() {
-        return createOpenAPI("http://production-url.com", "Production");
+        return createOpenAPI("\n" +
+                "https://patika-spring-b7a23f433143.herokuapp.com/", "Production");
     }
     private OpenAPI createOpenAPI(String url, String description) {
         Server server = new Server();
