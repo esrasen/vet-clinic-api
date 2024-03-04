@@ -2,7 +2,6 @@ package com.esrasen.vetclinicapi.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,7 +38,7 @@ public class Customer {
     private String city;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Animal> animalList;
+    private List<Animal> animals;
 
 
 }

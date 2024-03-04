@@ -17,6 +17,6 @@ public class AppointmentUpdateRequest {
     private Long id;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime appointmentDate;
-    private String doctorName;
-    private String animalName;
+    private Long doctorId;
+    private Long animalId;
 }

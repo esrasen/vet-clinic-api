@@ -1,17 +1,26 @@
 package com.esrasen.vetclinicapi.business.abstracts;
 
+import com.esrasen.vetclinicapi.dto.request.animal.AnimalSaveRequest;
+import com.esrasen.vetclinicapi.dto.request.animal.AnimalUpdateRequest;
+import com.esrasen.vetclinicapi.dto.request.doctor.DoctorSaveRequest;
+import com.esrasen.vetclinicapi.dto.request.doctor.DoctorUpdateRequest;
+import com.esrasen.vetclinicapi.dto.response.CursorResponse;
+import com.esrasen.vetclinicapi.dto.response.animal.AnimalResponse;
+import com.esrasen.vetclinicapi.dto.response.customer.CustomerResponse;
+import com.esrasen.vetclinicapi.dto.response.doctor.DoctorResponse;
 import com.esrasen.vetclinicapi.entities.Doctor;
 import org.springframework.data.domain.Page;
 
 public interface IDoctorService {
 
-    Doctor save(Doctor doctor);
 
-    Doctor get(Long id);
+    DoctorResponse getDoctorById(Long id);
 
-    Page<Doctor> cursor(int page, int pageSize);
+    CursorResponse<DoctorResponse> cursor(int page, int pageSize);
 
-    Doctor update(Doctor doctor);
+    DoctorResponse save(DoctorSaveRequest doctorSaveRequest);
 
-    boolean delete(Long id);
+    DoctorResponse update(DoctorUpdateRequest doctorUpdateRequest);
+
+    DoctorResponse delete(Long id);
 }

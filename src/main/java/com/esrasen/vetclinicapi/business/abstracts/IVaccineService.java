@@ -1,6 +1,9 @@
 package com.esrasen.vetclinicapi.business.abstracts;
 
 import com.esrasen.vetclinicapi.core.result.ResultData;
+import com.esrasen.vetclinicapi.dto.request.vaccine.VaccineSaveRequest;
+import com.esrasen.vetclinicapi.dto.request.vaccine.VaccineUpdateRequest;
+import com.esrasen.vetclinicapi.dto.response.CursorResponse;
 import com.esrasen.vetclinicapi.dto.response.vaccine.VaccineResponse;
 import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Doctor;
@@ -11,13 +14,21 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IVaccineService {
-    Vaccine save(Vaccine vaccine);
-    Vaccine get(Long id);
-    List<Vaccine> findByAnimalId(Long id);
-    Page<Vaccine> cursor(int page, int pageSize);
-    Vaccine update(Vaccine vaccine);
-    boolean delete(Long id);
+
+    VaccineResponse getVaccineById(Long id);
+
+    List<VaccineResponse> findByAnimalId(Long id);
+
     ResultData<List<VaccineResponse>> findByProtectionFinishDateBetween(LocalDate startDate, LocalDate finishDate);
-    boolean existsByAnimalIdAndNameAndCodeAndProtectionFinishDateAfter(Long animalId,String vaccineName, String vaccineCode, LocalDate protectionFinishDate);
+
+    boolean existsByAnimalIdAndNameAndCodeAndProtectionFinishDateAfter(Long animalId, String vaccineName, String vaccineCode, LocalDate protectionFinishDate);
+
+    CursorResponse<VaccineResponse> cursor(int page, int pageSize);
+
+    VaccineResponse save(VaccineSaveRequest vaccineSaveRequest);
+
+    VaccineResponse update(VaccineUpdateRequest vaccineUpdateRequest);
+
+    VaccineResponse delete(Long id);
 
 }

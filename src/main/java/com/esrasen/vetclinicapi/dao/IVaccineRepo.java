@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IVaccineRepo extends JpaRepository<Vaccine, Long> {
@@ -19,4 +20,6 @@ public interface IVaccineRepo extends JpaRepository<Vaccine, Long> {
     boolean existsByAnimalIdAndNameAndCodeAndProtectionFinishDateAfter(Long animalId, String vaccineName, String vaccineCode, LocalDate protectionFinishDate);
 
     List<Vaccine> findByProtectionFinishDateBetween(LocalDate startDate, LocalDate finishDate);
+    Optional<Vaccine> findByNameAndCodeAndProtectionStartDateAndProtectionFinishDateAndAnimalId(
+            String name, String code, LocalDate protectionStartDate, LocalDate protectionFinishDate, Long animalId);
 }

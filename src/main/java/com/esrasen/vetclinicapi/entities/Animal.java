@@ -45,7 +45,10 @@ public class Animal {
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "animal")
+    @OneToMany(mappedBy = "animal", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Vaccine> vaccines;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments;
 
 }

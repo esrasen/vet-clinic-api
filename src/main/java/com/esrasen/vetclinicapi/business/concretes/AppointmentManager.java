@@ -1,14 +1,26 @@
 package com.esrasen.vetclinicapi.business.concretes;
 
 import com.esrasen.vetclinicapi.business.abstracts.IAppointmentService;
+import com.esrasen.vetclinicapi.core.config.modelMapper.IModelMapperService;
+import com.esrasen.vetclinicapi.core.exception.DublicateEntityException;
 import com.esrasen.vetclinicapi.core.exception.appointment.DoctorNotAvailableException;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
 import com.esrasen.vetclinicapi.core.exception.appointment.AppointmentSlotNotAvailableException;
 import com.esrasen.vetclinicapi.core.exception.appointment.InvalidAppointmentTimeException;
 import com.esrasen.vetclinicapi.core.utilies.Msg;
+import com.esrasen.vetclinicapi.dao.IAnimalRepo;
 import com.esrasen.vetclinicapi.dao.IAppointmentRepo;
 import com.esrasen.vetclinicapi.dao.IAvailableDateRepo;
+import com.esrasen.vetclinicapi.dao.IDoctorRepo;
+import com.esrasen.vetclinicapi.dto.request.appointment.AppointmentSaveRequest;
+import com.esrasen.vetclinicapi.dto.request.appointment.AppointmentUpdateRequest;
+import com.esrasen.vetclinicapi.dto.response.CursorResponse;
+import com.esrasen.vetclinicapi.dto.response.animal.AnimalResponse;
+import com.esrasen.vetclinicapi.dto.response.appointment.AppointmentResponse;
+import com.esrasen.vetclinicapi.entities.Animal;
 import com.esrasen.vetclinicapi.entities.Appointment;
+import com.esrasen.vetclinicapi.entities.Customer;
+import com.esrasen.vetclinicapi.entities.Doctor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,10 +37,52 @@ public class AppointmentManager implements IAppointmentService {
 
     private final IAppointmentRepo appointmentRepo;
     private final IAvailableDateRepo availableDateRepo;
+    private final IModelMapperService modelMapper;
+    private final IDoctorRepo doctorRepo;
+    private final IAnimalRepo animalRepo;
 
 
     @Override
-    public Appointment save(Appointment appointment) {
+    public AppointmentResponse getAppointmentById(Long id) {
+        Appointment appointment = appointmentRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        return modelMapper.forResponse().map(appointment, AppointmentResponse.class);
+    }
+
+    @Override
+    public List<AppointmentResponse> getAppointmentByDoctorAndDateRange(Long doctorId, LocalDateTime startDate, LocalDateTime finishDate) {
+
+        List<Appointment> appointments = appointmentRepo.findByDoctorIdAndAppointmentDateBetween(doctorId, startDate, finishDate);
+        if (appointments.isEmpty())
+            throw new NotFoundException(Msg.NOT_FOUND);
+        return modelMapper.mapList(appointments, AppointmentResponse.class);
+    }
+
+    @Override
+    public List<AppointmentResponse> getAppointmentByAnimalAndDateRange(Long animalId, LocalDateTime startDate, LocalDateTime finishDate) {
+
+        List<Appointment> appointments = appointmentRepo.findByAnimalIdAndAppointmentDateBetween(animalId, startDate, finishDate);
+        if(appointments.isEmpty())
+            throw new NotFoundException(Msg.NOT_FOUND);
+        return modelMapper.mapList(appointments, AppointmentResponse.class);
+    }
+
+    @Override
+    public CursorResponse<AppointmentResponse> cursor(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Appointment> appointments = appointmentRepo.findAll(pageable);
+        Page<AppointmentResponse> appointmentResponsePage = appointments
+                .map(appointment -> this.modelMapper.forResponse().map(appointment, AppointmentResponse.class));
+
+        return new CursorResponse<>(appointments.getNumber(), appointments.getSize(), appointments.getTotalElements(), appointmentResponsePage.getContent());
+
+    }
+
+    @Override
+    public AppointmentResponse save(AppointmentSaveRequest appointmentSaveRequest) {
+        if (isAppointmentAlreadyExist(appointmentSaveRequest)) {
+            throw new DublicateEntityException(Msg.ALREADY_EXISTS);
+        }
+        Appointment appointment = modelMapper.forRequest().map(appointmentSaveRequest, Appointment.class);
 
         if (appointment.getAppointmentDate().getMinute() != 0) {
             throw new InvalidAppointmentTimeException(Msg.INVALID_APPOINTMENT_TIME);
@@ -38,53 +92,50 @@ public class AppointmentManager implements IAppointmentService {
         if (!doctorAvailable) {
             throw new DoctorNotAvailableException(Msg.DOCTOR_NOT_AVAILABLE);
         }
-
         LocalDateTime startDateTime = appointment.getAppointmentDate();
         LocalDateTime finishDateTime = startDateTime.plusHours(1);
-
         boolean doctorOrAnimalUnavailable = !appointmentRepo.findByDoctorIdAndAppointmentDateBetween(appointment.getDoctor().getId(), startDateTime, finishDateTime).isEmpty() ||
                 !appointmentRepo.findByAnimalIdAndAppointmentDateBetween(appointment.getAnimal().getId(), startDateTime, finishDateTime).isEmpty();
         if (doctorOrAnimalUnavailable) {
             throw new AppointmentSlotNotAvailableException(Msg.APPOINTMENT_SLOT_NOT_AVAILABLE);
         }
 
-
-        return this.appointmentRepo.save(appointment);
+        Doctor doctor = doctorRepo.findById(appointmentSaveRequest.getDoctorId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        appointment.setDoctor(doctor);
+        Animal animal = animalRepo.findById(appointmentSaveRequest.getAnimalId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        appointment.setAnimal(animal);
+        return modelMapper.forResponse().map(appointmentRepo.save(appointment), AppointmentResponse.class);
     }
 
     @Override
-    public Appointment get(Long id) {
-        return this.appointmentRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+    public AppointmentResponse update(AppointmentUpdateRequest appointmentUpdateRequest) {
+        Appointment appointment = appointmentRepo.findById(appointmentUpdateRequest.getId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+
+        Doctor doctor = doctorRepo.findById(appointmentUpdateRequest.getDoctorId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        appointment.setDoctor(doctor);
+
+        Animal animal = animalRepo.findById(appointmentUpdateRequest.getAnimalId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        appointment.setAnimal(animal);
+
+        modelMapper.forRequest().map(appointmentUpdateRequest, appointment);
+
+        Appointment updateAppointment = appointmentRepo.save(appointment);
+        return modelMapper.forResponse().map(updateAppointment, AppointmentResponse.class);
     }
 
     @Override
-    public Page<Appointment> cursor(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        return this.appointmentRepo.findAll(pageable);
+    public AppointmentResponse delete(Long id) {
+        Appointment appointment = appointmentRepo.findById(id).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
+        appointmentRepo.delete(appointment);
+
+        return modelMapper.forResponse().map(appointment, AppointmentResponse.class);
     }
 
-    @Override
-    public Appointment update(Appointment appointment) {
-        this.get(appointment.getId());
-        return this.appointmentRepo.save(appointment);
+    private boolean isAppointmentAlreadyExist(AppointmentSaveRequest appointmentSaveRequest) {
+        return appointmentRepo.findByAppointmentDateAndDoctorIdAndAnimalId(
+                        appointmentSaveRequest.getAppointmentDate(),
+                        appointmentSaveRequest.getDoctorId(),
+                        appointmentSaveRequest.getAnimalId())
+                .isPresent();
     }
-
-    @Override
-    public boolean delete(Long id) {
-        Appointment appointment = this.get(id);
-        this.appointmentRepo.delete(appointment);
-        return true;
-    }
-
-    @Override
-    public List<Appointment> getAppointmentByDoctorAndDateRange(Long doctorId, LocalDateTime startDate, LocalDateTime finishDate) {
-        return appointmentRepo.findByDoctorIdAndAppointmentDateBetween(doctorId, startDate, finishDate);
-    }
-
-    @Override
-    public List<Appointment> getAppointmentByAnimalAndDateRange(Long animalId, LocalDateTime startDate, LocalDateTime finishDate) {
-        return appointmentRepo.findByAnimalIdAndAppointmentDateBetween(animalId, startDate, finishDate);
-    }
-
-
 }

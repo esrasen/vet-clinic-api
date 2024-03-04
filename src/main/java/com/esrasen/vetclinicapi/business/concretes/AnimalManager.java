@@ -1,13 +1,12 @@
 package com.esrasen.vetclinicapi.business.concretes;
 
 import com.esrasen.vetclinicapi.business.abstracts.IAnimalService;
-import com.esrasen.vetclinicapi.business.abstracts.ICustomerService;
 import com.esrasen.vetclinicapi.core.config.modelMapper.IModelMapperService;
+import com.esrasen.vetclinicapi.core.exception.DublicateEntityException;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
 import com.esrasen.vetclinicapi.core.utilies.Msg;
 import com.esrasen.vetclinicapi.dao.IAnimalRepo;
 import com.esrasen.vetclinicapi.dao.ICustomerRepo;
-import com.esrasen.vetclinicapi.dao.IVaccineRepo;
 import com.esrasen.vetclinicapi.dto.request.animal.AnimalSaveRequest;
 import com.esrasen.vetclinicapi.dto.request.animal.AnimalUpdateRequest;
 import com.esrasen.vetclinicapi.dto.response.CursorResponse;
@@ -40,7 +39,7 @@ public class AnimalManager implements IAnimalService {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Animal> animals = animalRepo.findAll(pageable);
         Page<AnimalResponse> animalResponsePage = animals
-                .map(animal -> this.modelMapper.forResponse().map(animal, AnimalResponse.class));
+                .map(animal -> modelMapper.forResponse().map(animal, AnimalResponse.class));
 
         return new CursorResponse<>(animals.getNumber(), animals.getSize(), animals.getTotalElements(), animalResponsePage.getContent());
 
@@ -59,11 +58,12 @@ public class AnimalManager implements IAnimalService {
 
     @Override
     public AnimalResponse save(AnimalSaveRequest animalSaveRequest) {
+        if (isAnimalAlreadyExist(animalSaveRequest)){
+            throw new DublicateEntityException(Msg.ALREADY_EXISTS);
+        }
         Animal animal = modelMapper.forRequest().map(animalSaveRequest, Animal.class);
-
         Customer customer = customerRepo.findById(animalSaveRequest.getCustomerId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
         animal.setCustomer(customer);
-
         Animal saveAnimal = animalRepo.save(animal);
         return modelMapper.forResponse().map(saveAnimal, AnimalResponse.class);
     }
@@ -75,17 +75,10 @@ public class AnimalManager implements IAnimalService {
         Animal existingAnimal = animalRepo.findById(animalUpdateRequest.getId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
 
         Customer customer = customerRepo.findById(animalUpdateRequest.getCustomerId()).orElseThrow(() -> new NotFoundException(Msg.NOT_FOUND));
-
         existingAnimal.setCustomer(customer);
-
         modelMapper.forRequest().map(animalUpdateRequest, existingAnimal);
 
-        /*if (!Objects.equals(animalUpdateRequest.getCustomerId(), existingAnimal.getCustomer().getId())
-        && (!Objects.equals(animalUpdateRequest.getName(), existingAnimal.getName()))){
-
-        }*/
         Animal updateAnimal = animalRepo.save(existingAnimal);
-
         return modelMapper.forResponse().map(updateAnimal, AnimalResponse.class);
     }
 
@@ -95,5 +88,16 @@ public class AnimalManager implements IAnimalService {
         animalRepo.delete(existingAnimal);
 
         return modelMapper.forResponse().map(existingAnimal, AnimalResponse.class);
+    }
+
+    private boolean isAnimalAlreadyExist(AnimalSaveRequest animalSaveRequest) {
+        return animalRepo.findByNameAndSpeciesAndBreedAndGenderAndColorAndDateOfBirthAndCustomerId(
+                animalSaveRequest.getName(),
+                animalSaveRequest.getSpecies(),
+                animalSaveRequest.getBreed(),
+                animalSaveRequest.getGender(),
+                animalSaveRequest.getColor(),
+                animalSaveRequest.getDateOfBirth(),
+                animalSaveRequest.getCustomerId()).isPresent();
     }
 }

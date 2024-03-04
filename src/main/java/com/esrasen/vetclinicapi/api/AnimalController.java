@@ -23,7 +23,7 @@ public class AnimalController {
 
     @GetMapping("/{id}")
     public ResultData<AnimalResponse> getAnimalById(@PathVariable("id") Long id) {
-        AnimalResponse animalResponse = this.animalService.getAnimalById(id);
+        AnimalResponse animalResponse = animalService.getAnimalById(id);
         return ResultHelper.success(animalResponse);
     }
 
@@ -32,16 +32,15 @@ public class AnimalController {
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "pageSize", required = false, defaultValue = "10") int pageSize) {
 
-        CursorResponse<AnimalResponse> animalResponsePage = this.animalService.cursor(page, pageSize);
+        CursorResponse<AnimalResponse> animalResponsePage = animalService.cursor(page, pageSize);
         return ResultHelper.success(animalResponsePage);
 
     }
 
     @GetMapping("/info")
     public ResultData<List<AnimalResponse>> get(@RequestParam(name = "name") String name) {
-        List<AnimalResponse> animals = this.animalService.findAllByName(name);
-
-        return ResultHelper.success(animals);
+        List<AnimalResponse> animalResponse = animalService.findAllByName(name);
+        return ResultHelper.success(animalResponse);
     }
 
 
@@ -49,23 +48,20 @@ public class AnimalController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResultData<AnimalResponse> save(@Valid @RequestBody AnimalSaveRequest animalSaveRequest) {
         AnimalResponse saveAnimalResponse = animalService.save(animalSaveRequest);
-
         return ResultHelper.created(saveAnimalResponse);
     }
 
     @PutMapping()
     public ResultData<AnimalResponse> update(@Valid @RequestBody AnimalUpdateRequest animalUpdateRequest) {
-        AnimalResponse updateAnimal = this.animalService.update(animalUpdateRequest);
-        return ResultHelper.success(updateAnimal);
+        AnimalResponse animalResponse = animalService.update(animalUpdateRequest);
+        return ResultHelper.success(animalResponse);
     }
 
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResultData<AnimalResponse> delete(@PathVariable("id") Long id) {
-
-        AnimalResponse animalResponse = this.animalService.delete(id);
+        AnimalResponse animalResponse = animalService.delete(id);
         return ResultHelper.success(animalResponse);
-
     }
 }

@@ -1,5 +1,6 @@
 package com.esrasen.vetclinicapi.core.config;
 
+import com.esrasen.vetclinicapi.core.exception.DublicateEntityException;
 import com.esrasen.vetclinicapi.core.exception.appointment.DoctorNotAvailableException;
 import com.esrasen.vetclinicapi.core.exception.NotFoundException;
 import com.esrasen.vetclinicapi.core.exception.appointment.AppointmentSlotNotAvailableException;
@@ -47,5 +48,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppointmentSlotNotAvailableException.class)
     public ResponseEntity<Result> handleAppointmentSlotNotAvailableException(AppointmentSlotNotAvailableException e) {
         return new ResponseEntity<>(ResultHelper.conflict(e.getMessage()), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DublicateEntityException.class)
+    public ResponseEntity<Result> handleDublicateEntityException(DublicateEntityException e) {
+        return new ResponseEntity<>(ResultHelper.badRequest(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
