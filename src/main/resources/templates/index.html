@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>
+        Vet Clinic API
+    </title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .mtb {
+            margin-top: 2rem !important;
+            margin-bottom: 2rem !important;
+        }
+
+        .mlr {
+            margin-left: 25rem !important;
+            margin-right: 25rem !important;
+        }
+    </style>
+</head>
+<body class="bg-blue-100">
+<div class="max-w-m mtb mlr bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="px-6 py-4">
+        <center><img src="/logo.jpeg"></center>
+        <div class="flex justify-between items-center">
+            <i class="fas fa-bars text-gray-400">
+            </i>
+            <span class="text-xs text-gray-400">
+      v1.0.0 API
+     </span>
+        </div>
+        <div class="text-center mt-3">
+            <p class="text-xs text-gray-400">
+                2024
+            </p>
+            <h2 class="text-xl font-semibold text-blue-900">
+                Vet Clinic API
+            </h2>
+            <div class="flex justify-center items-center mt-4">
+                <div class="h-2 w-2 bg-blue-900 rounded-full mr-1">
+                </div>
+                <div class="h-2 w-2 bg-blue-900 rounded-full mr-1">
+                </div>
+                <div class="h-2 w-2 bg-blue-900 rounded-full">
+                </div>
+            </div>
+            <h3 class="text-lg text-blue-900 mt-2">
+                Hoş Geldiniz!
+            </h3>
+            <p class="text-xs text-gray-600 mt-2">
+                Bu proje, bir veteriner kliniğinin kendi işlerini yönetebildiği bir API'nin geliştirilmesini amaçlamaktadır.
+                API, veteriner çalışanları tarafından kullanılmak üzere tasarlanmıştır. Bu API aracılığıyla, veteriner kliniği çalışanları aşağıdaki işlevleri gerçekleştirebilecektir:
+
+
+
+
+            </p>
+            <button class="bg-blue-900 text-white text-xs px-4 py-2 rounded mt-4 focus:outline-none">
+                <a th:href="${swaggerHrefValue}">Swagger API UI gitmek için tıklayın!</a>
+            </button>
+        </div>
+    </div>
+    <div class="flex justify-around items-center bg-gray-900 text-white text-xs p-4">
+        <div class="text-center">
+            <i class="fas fa-paw">
+            </i>
+            <p>
+                <a th:href="${animalHrefValue}">Hayvan Yönetimi</a>
+            </p>
+        </div>
+        <div class="text-center">
+            <i class="fas fa-check-circle">
+            </i>
+            <p>
+                <a th:href="${customerHrefValue}">Müşteri Yönetimi</a>
+
+            </p>
+        </div>
+        <div class="text-center">
+            <i class="fas fa-play-circle">
+            </i>
+            <p>
+                <a th:href="${doctorHrefValue}">Doktor Yönetimi</a>
+
+            </p>
+        </div>
+        <div class="text-center">
+            <i class="fas fa-circle">
+            </i>
+            <p>
+                <a th:href="${vaccineHrefValue}">Aşı Yönetimi</a>
+
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
