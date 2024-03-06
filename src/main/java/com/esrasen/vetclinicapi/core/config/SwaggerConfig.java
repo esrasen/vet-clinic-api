@@ -1,6 +1,7 @@
 package com.esrasen.vetclinicapi.core.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.info.Info;
@@ -11,17 +12,20 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class SwaggerConfig {
 
+    @Value("${swagger.url}")
+    private String swaggerUrl;
+
     @Profile("dev")
     @Bean
     public OpenAPI devOpenAPI() {
-        return createOpenAPI("http://localhost:8080", "Development");
+        return createOpenAPI(swaggerUrl, "Development");
     }
 
     @Profile("prod")
     @Bean
     public OpenAPI prodOpenAPI() {
         return createOpenAPI("\n" +
-                "https://patika-dev-57981ef145be.herokuapp.com/", "Production");
+                swaggerUrl, "Production");
     }
     private OpenAPI createOpenAPI(String url, String description) {
         Server server = new Server();

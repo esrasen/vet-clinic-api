@@ -10,8 +10,8 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <p>
-<b>Backend API Projesi Production:</b> <a href="https://patika-dev-57981ef145be.herokuapp.com/">https://patika-dev-57981ef145be.herokuapp.com/</a><br/><br/>
-<b>Backend Swagger Production:</b> <a href="https://patika-dev-57981ef145be.herokuapp.com/swagger-ui/index.html">https://patika-dev-57981ef145be.herokuapp.com/swagger-ui/index.html</a><br/><br/>
+<b>Backend API Projesi Production:</b> <a href="https://patika-dev-7dcb56acf891.herokuapp.com/">https://patika-dev-7dcb56acf891.herokuapp.com/</a><br/><br/>
+<b>Backend Swagger Production:</b> <a href="https://patika-dev-7dcb56acf891.herokuapp.com/swagger-ui/index.html">https://patika-dev-7dcb56acf891.herokuapp.com/swagger-ui/index.html</a><br/><br/>
 <b>Örnek Database:</b> <a href="docs/db/veterinary.sql">veterinary.sql</a>
 </p>
 

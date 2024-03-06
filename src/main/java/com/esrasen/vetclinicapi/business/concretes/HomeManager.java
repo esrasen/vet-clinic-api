@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 public class HomeManager {
-   @Value("${template.animal.url}")
+    @Value("${template.animal.url}")
     private String animalHrefValue;
 
-   @Value("${template.doctor.url}")
+    @Value("${template.doctor.url}")
     private String doctorHrefValue;
 
     @Value("${template.customer.url}")
