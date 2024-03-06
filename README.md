@@ -79,14 +79,27 @@ Projede kullanılan teknolojiler:
 <h2 id="kurulum"> :hammer: Kurulum ve Başlatma</h2>
 
 <p align="justify"> 
-Projeyi  klonlamak ve çalıştırmak için aşağıdaki adımları takip edin:
+<b>Projeyi  klonlamak ve çalıştırmak için aşağıdaki adımları takip edin:</b><br/>
 
 ```bash
 git clone https://github.com/esrasen/vet-clinic-api.git
 cd vet-clinic-api
 ```
+<br/>
+<b>Projeyi IDE'de çalıştırmak için aşağıdaki adımları takip edin:</b><br/>
+<b>Run/Debug Configurations'a gidin:</b>
+Menüden Run -> Edit Configurations seçeneğine tıklayın.<br/>
 
-Projeyi IDE'nizde açın ve `Main` sınıfını çalıştırın.
+<b>Active profiles ayarını düzenleyin:</b> Uygulamanın bulunduğu Spring Boot run configuration'ını seçin.
+Configuration sekmesinde, Active profiles alanına dev yazın.
+Daha sonra `Main` sınıfını çalıştırın.
+
+<h3>Active Profile Ayarları</h3>
+Uygulamayı çalıştırırken lokal ortamda test etmek için active profiles'i dev olarak ayarlayın ve terminalde aşağıdaki komutu çalıştırın:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
